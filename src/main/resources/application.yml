@@ -1,0 +1,25 @@
+
+spring:
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/dauo
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+    initialization-mode: always
+  h2.console.enabled: true  # 웹 콘솔 사용 설정
+
+
+  batch:
+    jdbc:
+      initialize-schema: always
+
+
+logging.level:
+  level:
+    jdbc.sqlonly: DEBUG ## 이부분 추가.
+    org.springframework.web: DEBUG
+    com.zaxxer.hikari.HikariDataSource: ERROR
+
+
+
+
