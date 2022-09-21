@@ -12,6 +12,12 @@ spring:
   batch:
     jdbc:
       initialize-schema: always
+mybatis:
+  type-aliases-pakage: tech.exam.dauo
+  mapper-locations: mapper/*.xml
+
+
+
 
 
 logging.level:

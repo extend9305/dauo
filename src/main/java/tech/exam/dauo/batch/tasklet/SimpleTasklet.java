@@ -5,14 +5,19 @@ import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
-import tech.exam.dauo.batch.dto.DataDTO;
+import tech.exam.dauo.dao.DaouExamMapper;
+import tech.exam.dauo.dto.DataDTO;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 public class SimpleTasklet implements Tasklet {
+        DaouExamMapper daouExamMapper;
+
+    public SimpleTasklet(DaouExamMapper daouExamMapper) {
+        this.daouExamMapper = daouExamMapper;
+    }
+
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         String SAVE_PATH = getClass().getClassLoader().getResource("").toString()+"/resources/target";
@@ -23,8 +28,6 @@ public class SimpleTasklet implements Tasklet {
 
         BufferedReader br;
 
-        List<DataDTO> dataList = new ArrayList<>();
-
 
         for (File file:files) {
             String fileName = file.getName();
@@ -32,42 +35,44 @@ public class SimpleTasklet implements Tasklet {
 
             switch (ext){
                 case "txt" :
-                    dataList.add(readDefalut(file));
+                    readDefalut(file);
                     break;
                 case "csv" :
-                    dataList.add(readDefalut(file));
+                    readDefalut(file);
                     break;
                 default:
                     break;
             }
-
         }
 
         return RepeatStatus.FINISHED;
     }
     /*
-            csv,txt 파일 파싱가능.
-         */
-    public  DataDTO readDefalut(File file) {
+        csv,txt 파일 파싱가능.
+     */
+    public  void readDefalut(File file) {
         DataDTO dto = new DataDTO();
         try (BufferedReader br = new BufferedReader(new FileReader(file));){
             String s;
 
             while ((s = br.readLine()) != null) {
+                log.info(dto.toString());
                 String[] item = s.split("\\|");
-                dto.setRegDtm(item[0]);
-                dto.setJoinCnt(item[1]);
-                dto.setResignCnt(item[2]);
-                dto.setPayAmt(item[3]);
-                dto.setUsedAmt(item[4]);
-                dto.setSalesAmt(item[5]);
+
+                dto.setRegDtm(item[0].replaceAll("-","").replaceAll(" ","").trim());
+                dto.setJoinCnt(item[1].replaceAll(",","").trim());
+                dto.setResignCnt(item[2].replaceAll(",","").trim());
+                dto.setPayAmt(item[3].replaceAll(",","").trim());
+                dto.setUsedAmt(item[4].replaceAll(",","").trim());
+                dto.setSalesAmt(item[5].replaceAll(",","").trim());
+
+                daouExamMapper.setDaouExam(dto);
             }
+
         }catch (FileNotFoundException e){
             log.info(e.getMessage());
         }catch (IOException e){
             log.info(e.getMessage());
         }
-
-        return dto;
     }
 }
