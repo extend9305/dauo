@@ -6,11 +6,46 @@
 
 <!-- Mapper를 사용하는 Repository의 전체 경로를 적어줘야함. -->
 <mapper namespace="tech.exam.dauo.dao.DaouExamMapper">
-    <select id="getDaouExamList" resultType="tech.exam.dauo.dto.DataDTO">
-        select  * from dauo_exam;
+    <select id="getAllList" resultType="tech.exam.dauo.dto.DataDTO">
+        select
+            reg_dtm as regDtm
+        ,   join_cnt as joinCnt
+        ,   resign_cnt as resignCnt
+        ,   pay_amt as payAmt
+        ,   used_amt as usedAmt
+        ,   sales_amt as salesAmt
+        from dauo_exam;
     </select>
-    <insert id="setDaouExam">
+    <select id="getFindDauoExam" resultType="tech.exam.dauo.dto.DataDTO">
+        select
+            reg_dtm as regDtm
+        ,   join_cnt as joinCnt
+        ,   resign_cnt as resignC
+        ,   pay_amt as payAmt
+        ,   used_amt as usedAmt
+        ,   sales_amt as salesAmt
+        from dauo_exam where reg_dtm = #{regDtm};
+    </select>
+
+    <delete id="delete" >
+        delete from dauo_exam where reg_dtm = #{regDtm};
+    </delete>
+
+    <insert id="save">
         insert into dauo_exam(reg_dtm,join_cnt,resign_cnt,pay_amt,used_amt,sales_amt)
         values (#{regDtm},#{joinCnt},#{resignCnt},#{payAmt},#{usedAmt},#{salesAmt});
     </insert>
+
+    <update id="update">
+        update dauo_exam set
+            join_cnt   =#{joinCnt}
+        ,   resign_cnt =#{resignCnt}
+        ,   pay_amt    =#{payAmt}
+        ,   used_amt   =#{usedAmt}
+        ,   sales_amt  =#{salesAmt}
+        where
+            reg_dtm  = #{regDtm}
+    </update>
+
+
 </mapper>

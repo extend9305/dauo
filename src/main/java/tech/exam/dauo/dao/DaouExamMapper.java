@@ -9,6 +9,10 @@ import java.util.List;
 @Repository
 @Mapper
 public interface DaouExamMapper {
-    List<DataDTO> getDaouExamList();
-    void setDaouExam(DataDTO dto);
+    List<DataDTO> getAllList();
+    void save(DataDTO dto);
+    void delete(String regDtm);
+    DataDTO getFindDauoExam(String regDtm);
+    void update(DataDTO dto);
+
 }

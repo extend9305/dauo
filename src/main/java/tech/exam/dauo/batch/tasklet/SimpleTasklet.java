@@ -66,7 +66,7 @@ public class SimpleTasklet implements Tasklet {
                 dto.setUsedAmt(item[4].replaceAll(",","").trim());
                 dto.setSalesAmt(item[5].replaceAll(",","").trim());
 
-                daouExamMapper.setDaouExam(dto);
+                daouExamMapper.save(dto);
             }
 
         }catch (FileNotFoundException e){
