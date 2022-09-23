@@ -6,29 +6,37 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tech.exam.dauo.config.ConfigProperties;
 import tech.exam.dauo.dto.DataDTO;
 import tech.exam.dauo.response.DaouExamAPIResponse;
 import tech.exam.dauo.service.DauoExamService;
+import tech.exam.dauo.validate.DataDtoValidator;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 @Slf4j
+@Validated
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(path = "/dauo/api")
 public class DaouExamAPIController {
     private final DauoExamService dauoExamService;
+    private final ConfigProperties configProperties;
+    private final DataDtoValidator validator;
+
     DaouExamAPIResponse response = new DaouExamAPIResponse();
-    @Autowired
-    ConfigProperties configProperties;
 
     //
     @GetMapping("/hello")
     public String hello() {
-        log.info(configProperties.getIp().get(0));
         return "Hello World";
     }
 
@@ -54,10 +62,10 @@ public class DaouExamAPIController {
      * @return
      */
     @GetMapping(value = "/findJoinCnt/{regDtm}")
-    public ResponseEntity<DaouExamAPIResponse> findJoinCnt(@PathVariable String regDtm) {
+    public ResponseEntity<DaouExamAPIResponse> findJoinCnt(@Validated @PathVariable String regDtm) {
         String findJoinCnt = dauoExamService.getFindJoinCnt(regDtm);
 
-        if(isStringEmpty(findJoinCnt)){
+        if(validator.isStringEmpty(findJoinCnt)){
             response = DaouExamAPIResponse.builder()
                     .code(HttpStatus.NO_CONTENT.value())
                     .httpStatus(HttpStatus.NO_CONTENT)
@@ -82,9 +90,11 @@ public class DaouExamAPIController {
      * @return
      */
     @PostMapping("/save")
-    public ResponseEntity<DaouExamAPIResponse> oneSave(@RequestBody DataDTO dto){
+    public ResponseEntity<DaouExamAPIResponse> oneSave(@Validated @RequestBody DataDTO dto, BindingResult bindingResult){
 
-        if(!checkDTO(dto)){
+        validator.validate(dto,bindingResult);
+
+        if(bindingResult.hasErrors()){
             response = DaouExamAPIResponse.builder()
                     .code(HttpStatus.BAD_REQUEST.value())
                     .httpStatus(HttpStatus.BAD_REQUEST)
@@ -93,6 +103,7 @@ public class DaouExamAPIController {
                     .build();
             return new ResponseEntity<>(response, response.getHttpStatus());
         }
+
         dauoExamService.save(dto);
         response = DaouExamAPIResponse.builder()
                 .code(HttpStatus.OK.value())
@@ -116,19 +127,10 @@ public class DaouExamAPIController {
      */
 
     @PutMapping(value = "/update/{regDtm}")
-    public ResponseEntity<DaouExamAPIResponse> findOneUpdate(@PathVariable String regDtm, @RequestParam String joinCnt, @RequestParam String resignCnt, @RequestParam String payAmt, @RequestParam String usedAmt, @RequestParam String salesAmt) {
-        DataDTO dto = dauoExamService.getFindDauoExam(regDtm);
+    public ResponseEntity<DaouExamAPIResponse> findOneUpdate(@NotBlank  @Size(min = 10)  @Size(max = 10) @PathVariable  String regDtm, @PositiveOrZero  @RequestParam String joinCnt, @PositiveOrZero @RequestParam String resignCnt, @PositiveOrZero @RequestParam String payAmt, @PositiveOrZero @RequestParam String usedAmt, @PositiveOrZero  @RequestParam String salesAmt) {
+        DataDTO dto = new DataDTO();
 
-        if(dto ==null || !checkDTO(dto)){
-            response = DaouExamAPIResponse.builder()
-                    .code(HttpStatus.BAD_REQUEST.value())
-                    .httpStatus(HttpStatus.BAD_REQUEST)
-                    .message("잘못된 값으로 요청하였습니다.")
-                    .count(0)
-                    .build();
-            return new ResponseEntity<>(response, response.getHttpStatus());
-        }
-
+        dto.setRegDtm(regDtm);
         dto.setUsedAmt(usedAmt);
         dto.setSalesAmt(salesAmt);
         dto.setPayAmt(payAmt);
@@ -148,10 +150,12 @@ public class DaouExamAPIController {
     }
 
     @DeleteMapping(value = "/delete/{regDtm}")
-    public ResponseEntity<DaouExamAPIResponse> findOneDelete(@RequestParam String regDtm) {
+    public ResponseEntity<DaouExamAPIResponse> findOneDelete(@RequestParam String regDtm,Errors errors) {
         DataDTO dto = dauoExamService.getFindDauoExam(regDtm);
 
-        if(dto ==null || !checkDTO(dto)){
+        validator.validate(dto,errors);
+
+        if(errors.hasErrors()){
             response = DaouExamAPIResponse.builder()
                     .code(HttpStatus.BAD_REQUEST.value())
                     .httpStatus(HttpStatus.BAD_REQUEST)

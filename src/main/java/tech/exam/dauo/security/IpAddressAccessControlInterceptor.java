@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import tech.exam.dauo.config.ConfigProperties;
@@ -14,19 +15,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Component
 public class IpAddressAccessControlInterceptor implements HandlerInterceptor {
     @Autowired
     ConfigProperties configProperties;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        log.info(request.getRemoteAddr());
+        String clientIP = getClientIpAddr(request);
+        String[] ips = configProperties.getIp();
 
-        System.out.println(configProperties.getIp());
+        for (String ip:ips) {
+            if(clientIP.equals(ip)) return true;
+        }
 
-        //List<String> list = configProperties.getIp();
+        return false;
+    }
 
+    public String getClientIpAddr(HttpServletRequest request){
+    String ip=request.getHeader("X-Forwarded-For");
 
-        return true;
+    if(ip==null||ip.length()==0||"unknown".equalsIgnoreCase(ip)){
+        ip=request.getHeader("Proxy-Client-IP");
+    }
+    if(ip==null||ip.length()==0||"unknown".equalsIgnoreCase(ip)){
+        ip=request.getHeader("WL-Proxy-Client-IP");
+    }
+    if(ip==null||ip.length()==0||"unknown".equalsIgnoreCase(ip)){
+        ip=request.getHeader("HTTP_CLIENT_IP");
+    }
+    if(ip==null||ip.length()==0||"unknown".equalsIgnoreCase(ip)){
+        ip=request.getHeader("HTTP_X_FORWARDED_FOR");
+    }
+    if(ip==null||ip.length()==0||"unknown".equalsIgnoreCase(ip)){
+        ip=request.getRemoteAddr();
+    }
+
+        return ip;
     }
 }

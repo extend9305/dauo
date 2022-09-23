@@ -21,7 +21,7 @@ public class SimpleScheduler {
     private final JobLauncher jobLauncher;
     private final SimpleJobConfiguration jobConfiguration;
 
-    @Scheduled(initialDelay = 1000, fixedDelay = 1000 * 60)
+    @Scheduled(cron = "0 0 1 * * *")
     public void updateByBestSellerJob() {
         JobExecution execution;
         try {
