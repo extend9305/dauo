@@ -10,7 +10,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(ipAddressAccessControlInterceptor())
-                .addPathPatterns("/dauo/api/*");
+                .addPathPatterns("/dauo/api/**");
     }
 
     @Bean

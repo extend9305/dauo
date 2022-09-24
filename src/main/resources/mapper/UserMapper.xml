@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 위 코드가 mapper 설정을 하는 코드 -->
+
+<mapper namespace="tech.exam.dauo.dao.UserMapper">
+    <select id="findUserByUsername" resultType="tech.exam.dauo.dto.UserDTO">
+        select
+            USER_ID  as userId
+        ,   PASSWORD as password
+        ,   USERNAME as username
+        ,   ROLE     as role
+        from DAOU_USER;
+        where USERNAME =  #{username}
+    </select>
+    <select id="findByUserId" resultType="tech.exam.dauo.dto.UserDTO">
+        select
+            USER_ID  as userId
+        ,   PASSWORD as password
+        ,   USERNAME as username
+        ,   ROLE     as role
+        from DAOU_USER;
+        where USER_ID =  #{userId}
+        and PASSWORD = ${password}
+    </select>
+
+
+    <insert id="save">
+        insert into DAOU_USER(user_id,password,username,role)
+        values (#{userId},#{password},#{username},#{role});
+    </insert>
+</mapper>

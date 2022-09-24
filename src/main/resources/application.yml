@@ -10,6 +10,13 @@ spring:
   batch:
     jdbc:
       initialize-schema: always
+jwt:
+  secret-key: c88d74ba-1554-48a4-b549-b926f5d77c9e
+  header: Authorization
+  secret: fieldproject
+  token-validity-in-seconds: 3600000
+
+
 mybatis:
   type-aliases-pakage: tech.exam.dauo
   mapper-locations: mapper/*.xml
@@ -21,7 +28,8 @@ logging.level:
     com.zaxxer.hikari.HikariDataSource: ERROR
 
 client:
-  ip: 127.0.0.1, 127.0.0.2
+  ip: 127.0.0.1, 127.0.0.3
+
 
 
 

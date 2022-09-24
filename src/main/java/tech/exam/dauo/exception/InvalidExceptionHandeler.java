@@ -1,4 +1,4 @@
-package tech.exam.dauo.validate;
+package tech.exam.dauo.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
