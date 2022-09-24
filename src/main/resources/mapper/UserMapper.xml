@@ -11,8 +11,8 @@
         ,   PASSWORD as password
         ,   USERNAME as username
         ,   ROLE     as role
-        from DAOU_USER;
-        where USERNAME =  #{username}
+        from DAOU_USER
+        where USER_ID =  #{userId}
     </select>
     <select id="findByUserId" resultType="tech.exam.dauo.dto.UserDTO">
         select
@@ -20,13 +20,13 @@
         ,   PASSWORD as password
         ,   USERNAME as username
         ,   ROLE     as role
-        from DAOU_USER;
+        from DAOU_USER
         where USER_ID =  #{userId}
-        and PASSWORD = ${password}
+        and PASSWORD = #{password}
     </select>
 
 
-    <insert id="save">
+    <insert id="join">
         insert into DAOU_USER(user_id,password,username,role)
         values (#{userId},#{password},#{username},#{role});
     </insert>

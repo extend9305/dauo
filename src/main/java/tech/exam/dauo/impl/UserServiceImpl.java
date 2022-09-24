@@ -1,6 +1,7 @@
 package tech.exam.dauo.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tech.exam.dauo.dao.UserMapper;
@@ -13,11 +14,13 @@ import tech.exam.dauo.security.JwtTokenProvider;
 import tech.exam.dauo.service.UserService;
 
 import java.util.Collections;
+import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    UserMapper userMapper;
+    private final UserMapper userMapper;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
 
@@ -41,13 +44,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO join(UserDTO userDto) {
-        if (userMapper.findUserByUsername(userDto.getUsername()).isPresent()) {
+        if (userMapper.findUserByUsername(userDto.getUserId()).isPresent()) {
             throw new DuplicatedUsernameException("이미 가입된 유저입니다");
         }
 
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        userMapper.save(userDto);
+        userMapper.join(userDto);
 
-        return userMapper.findUserByUsername(userDto.getUsername()).get();
+        return userMapper.findUserByUsername(userDto.getUserId()).get();
     }
 }

@@ -1,6 +1,7 @@
 package tech.exam.dauo.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,13 +15,14 @@ import java.util.Arrays;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     private final UserMapper userMapper;
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        return userMapper.findByUserId(Long.valueOf(userId))
+        return userMapper.findUserByUsername(Long.valueOf(userId))
                 .map(user -> addAuthorities(user))
                 .orElseThrow(() -> new UserNotFoundException(userId + "> 찾을 수 없습니다."));
     }
