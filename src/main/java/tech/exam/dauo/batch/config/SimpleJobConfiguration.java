@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import tech.exam.dauo.batch.tasklet.SimpleTasklet;
+import tech.exam.dauo.config.ConfigProperties;
 import tech.exam.dauo.dao.DaouExamMapper;
 import tech.exam.dauo.service.DauoExamService;
 
@@ -19,6 +20,7 @@ import tech.exam.dauo.service.DauoExamService;
 public class SimpleJobConfiguration {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
+    private final ConfigProperties configProperties;
     @Autowired
     DaouExamMapper daouExamMapper;
 
@@ -32,7 +34,7 @@ public class SimpleJobConfiguration {
     @Bean
     public Step makeStep1() {
         return stepBuilderFactory.get("simpleStep1")
-                .tasklet(new SimpleTasklet(daouExamMapper))
+                .tasklet(new SimpleTasklet(daouExamMapper,configProperties))
                 .build();
     }
 }

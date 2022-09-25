@@ -16,12 +16,11 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-
 public class SimpleScheduler {
     private final JobLauncher jobLauncher;
     private final SimpleJobConfiguration jobConfiguration;
 
-    @Scheduled(cron = "0 0 1 * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void updateByBestSellerJob() {
         JobExecution execution;
         try {

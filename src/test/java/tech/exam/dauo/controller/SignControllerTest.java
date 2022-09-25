@@ -99,7 +99,5 @@ class SignControllerTest {
                 //Map으로 만든 input을 json형식의 String으로 만들기 위해 objectMapper를 사용
         )
                 .andExpect(status().isOk());
-
     }
-
 }

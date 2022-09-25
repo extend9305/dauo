@@ -10,4 +10,5 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 @Data
 public class ConfigProperties {
   private String[] ip;
+  private String savefilepath;
 }

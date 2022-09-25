@@ -11,28 +11,49 @@ import tech.exam.dauo.dao.DaouExamMapper;
 import tech.exam.dauo.dto.DataDTO;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Slf4j
 public class SimpleTasklet implements Tasklet {
     DaouExamMapper daouExamMapper;
-    @Autowired
     ConfigProperties configProperties;
 
-    public SimpleTasklet(DaouExamMapper daouExamMapper) {
+    public SimpleTasklet(DaouExamMapper daouExamMapper, ConfigProperties configProperties) {
         this.daouExamMapper = daouExamMapper;
+        this.configProperties = configProperties;
     }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-        String SAVE_PATH = getClass().getClassLoader().getResource("").toString()+"/resources/target";
-
-        String DATA_DIRECTORY = "C:\\workspace\\com\\com\\src\\main\\resources\\target";
+        String DATA_DIRECTORY = configProperties.getSavefilepath();
         File dir = new File(DATA_DIRECTORY);
+
+        File writeForder = new File(DATA_DIRECTORY);
+        File copyFolder = new File(DATA_DIRECTORY+"\\end");
+
+        if (!writeForder.exists()) {
+            try{
+                writeForder.mkdir(); //폴더 생성합니다.
+            }
+            catch(Exception e){
+                e.getStackTrace();
+            }
+        }
+
+        if (!copyFolder.exists()) {
+            try{
+                copyFolder.mkdir(); //폴더 생성합니다.
+            }
+            catch(Exception e){
+                e.getStackTrace();
+            }
+        }
+
         File[] files = dir.listFiles();
 
         BufferedReader br;
-
-
         for (File file:files) {
             String fileName = file.getName();
             String ext = fileName.substring(fileName.lastIndexOf(".")+1);
@@ -77,6 +98,17 @@ public class SimpleTasklet implements Tasklet {
             log.info(e.getMessage());
         }catch (IOException e){
             log.info(e.getMessage());
+        }finally {
+            log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            log.info(file.getPath());
+            log.info(configProperties.getSavefilepath()+"\\end\\"+ file.getName());
+            Path newfile = Paths.get(configProperties.getSavefilepath()+"\\end\\"+ file.getName());
+            try {
+                Files.move(file.toPath(), newfile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
