@@ -15,4 +15,5 @@ framework :  spring boot ver. 2.6.11
   post userId   : 10
        password : test
       
- 2. 토큰발급 후 api 기능 수행.
+ 2. 토큰발급 후 header X-AUTH-TOKEN 에 값셋팅 후  api 기능 수행.
+ 
