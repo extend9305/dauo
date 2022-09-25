@@ -20,7 +20,7 @@
         select
             reg_dtm as regDtm
         ,   join_cnt as joinCnt
-        ,   resign_cnt as resignC
+        ,   resign_cnt as resignCnt
         ,   pay_amt as payAmt
         ,   used_amt as usedAmt
         ,   sales_amt as salesAmt

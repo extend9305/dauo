@@ -53,4 +53,14 @@ public class UserServiceImpl implements UserService {
 
         return userMapper.findUserByUsername(userDto.getUserId()).get();
     }
+
+    @Override
+    public Optional<UserDTO> findUserByUsername(Long userId) {
+        return userMapper.findUserByUsername(userId);
+    }
+
+    @Override
+    public void delete(Long userId) {
+        userMapper.delete(userId);
+    }
 }

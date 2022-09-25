@@ -26,4 +26,16 @@ public class ExceptionHandler {
                 .build();
         return new ResponseEntity(response, response.getHttpStatus());
     }
+    @org.springframework.web.bind.annotation.ExceptionHandler(UserNotFoundException.class)
+    protected ResponseEntity<InvalidExceptionHandeler> exceptionHandler(UserNotFoundException ex) {
+
+        response = DaouExamAPIResponse.builder()
+                .code(HttpStatus.NOT_FOUND.value())
+                .httpStatus(HttpStatus.NOT_FOUND)
+                .message("찾을 수 없습니다.")
+                .count(0)
+                .build();
+        return new ResponseEntity(response, response.getHttpStatus());
+    }
+
 }

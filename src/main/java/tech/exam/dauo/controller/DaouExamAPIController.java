@@ -1,5 +1,9 @@
 package tech.exam.dauo.controller;
 
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Bucket4j;
+import io.github.bucket4j.Refill;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,26 +23,39 @@ import tech.exam.dauo.validate.DataDtoValidator;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 @Slf4j
 @Validated
-@RequiredArgsConstructor
+
 @RestController
 @RequestMapping(path = "/dauo/api")
 public class DaouExamAPIController {
     private final DauoExamService dauoExamService;
     private final ConfigProperties configProperties;
     private final DataDtoValidator validator;
+    private final Bucket bucket;
+
+    public DaouExamAPIController(DauoExamService dauoExamService, ConfigProperties configProperties, DataDtoValidator validator) {
+        this.dauoExamService = dauoExamService;
+        this.configProperties = configProperties;
+        this.validator = validator;
+
+        Bandwidth limit = Bandwidth.classic(20, Refill.greedy(20, Duration.ofMinutes(1)));
+        this.bucket = Bucket4j.builder()
+                .addLimit(limit)
+                .build();
+    }
 
     DaouExamAPIResponse response = new DaouExamAPIResponse();
 
-    //
     @GetMapping("/hello")
     public String hello() {
         return "Hello World";
     }
+
 
     /**
      * 모든 데이터 조회
@@ -150,12 +167,10 @@ public class DaouExamAPIController {
     }
 
     @DeleteMapping(value = "/delete/{regDtm}")
-    public ResponseEntity<DaouExamAPIResponse> findOneDelete(@RequestParam String regDtm,Errors errors) {
+    public ResponseEntity<DaouExamAPIResponse> findOneDelete(@Validated @PathVariable String regDtm) {
         DataDTO dto = dauoExamService.getFindDauoExam(regDtm);
 
-        validator.validate(dto,errors);
-
-        if(errors.hasErrors()){
+        if(validator.isStringEmpty(regDtm)){
             response = DaouExamAPIResponse.builder()
                     .code(HttpStatus.BAD_REQUEST.value())
                     .httpStatus(HttpStatus.BAD_REQUEST)
@@ -175,56 +190,6 @@ public class DaouExamAPIController {
                 .count(0)
                 .build();
         return new ResponseEntity<>(response, response.getHttpStatus());
-    }
-
-
-    /**
-     * 문자열 공백 체크 함수
-     * @param str
-     * @return
-     */
-    public boolean isStringEmpty(String str){
-        return str == null || str.trim().isEmpty();
-    }
-    /**
-     * 문자열 숫자타입 체크 함수
-     * @param str
-     * @return
-     */
-    public boolean  isNumFormat(String str){
-        try{
-            int number = Integer.parseInt(str);
-        }
-        catch (NumberFormatException e){
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * DTO 체크
-     * @param dto
-     * @return
-     */
-    public boolean checkDTO(DataDTO dto){
-        boolean saveCheck = true;
-
-        if(isStringEmpty(dto.getRegDtm()) || dto.getRegDtm().length() != 10){
-            saveCheck = false;
-        }
-        if(!isNumFormat(dto.getJoinCnt())){
-            saveCheck = false;
-        }
-        if(!isNumFormat(dto.getPayAmt())){
-            saveCheck = false;
-        }
-        if(!isNumFormat(dto.getSalesAmt())){
-            saveCheck = false;
-        }
-        if(!isNumFormat(dto.getUsedAmt())){
-            saveCheck = false;
-        }
-        return saveCheck;
     }
 
 }

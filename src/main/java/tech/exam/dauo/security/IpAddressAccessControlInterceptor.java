@@ -1,5 +1,7 @@
 package tech.exam.dauo.security;
 
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Bucket4j;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import tech.exam.dauo.buket.LimitService;
 import tech.exam.dauo.config.ConfigProperties;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +23,7 @@ import java.util.List;
 public class IpAddressAccessControlInterceptor implements HandlerInterceptor {
     @Autowired
     ConfigProperties configProperties;
+    LimitService limitService = new LimitService();
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

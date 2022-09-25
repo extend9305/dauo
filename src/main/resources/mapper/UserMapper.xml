@@ -30,4 +30,9 @@
         insert into DAOU_USER(user_id,password,username,role)
         values (#{userId},#{password},#{username},#{role});
     </insert>
+
+    <delete id="delete" >
+        delete from daou_user where user_id = #{userId};
+    </delete>
+
 </mapper>

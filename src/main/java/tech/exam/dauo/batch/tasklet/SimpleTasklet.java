@@ -5,6 +5,8 @@ import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import tech.exam.dauo.config.ConfigProperties;
 import tech.exam.dauo.dao.DaouExamMapper;
 import tech.exam.dauo.dto.DataDTO;
 
@@ -12,7 +14,9 @@ import java.io.*;
 
 @Slf4j
 public class SimpleTasklet implements Tasklet {
-        DaouExamMapper daouExamMapper;
+    DaouExamMapper daouExamMapper;
+    @Autowired
+    ConfigProperties configProperties;
 
     public SimpleTasklet(DaouExamMapper daouExamMapper) {
         this.daouExamMapper = daouExamMapper;

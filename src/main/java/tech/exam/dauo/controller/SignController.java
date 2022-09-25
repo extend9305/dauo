@@ -1,5 +1,9 @@
 package tech.exam.dauo.controller;
 
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Bucket4j;
+import io.github.bucket4j.Refill;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -20,13 +24,26 @@ import tech.exam.dauo.security.JwtTokenProvider;
 import tech.exam.dauo.service.ResponseService;
 import tech.exam.dauo.service.UserService;
 
+import java.time.Duration;
+
 @Slf4j
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 @RestController
 @RequestMapping
 public class SignController {
     private final UserService userService;
     private final ResponseService responseService;
+    private final Bucket bucket;
+
+    public SignController(UserService userService, ResponseService responseService) {
+        this.userService = userService;
+        this.responseService = responseService;
+
+        Bandwidth limit = Bandwidth.classic(20, Refill.greedy(20, Duration.ofMinutes(1)));
+        this.bucket = Bucket4j.builder()
+                .addLimit(limit)
+                .build();
+    }
 
     @PostMapping("/join")
     public ResponseEntity join(@RequestBody UserDTO userDto) {

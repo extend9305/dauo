@@ -14,6 +14,7 @@ public interface UserMapper {
     Optional<UserDTO> findByUserId(Long userId);
     //public String login(LoginDTO loginDto);
     public Long join(UserDTO userDto);
+    public void delete(Long userId);
 
 
 }
